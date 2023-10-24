@@ -768,6 +768,7 @@ export interface ITodoItemBriefDto {
 export class CreateTodoItemCommand implements ICreateTodoItemCommand {
     listId?: number;
     title?: string | undefined;
+    itemColour?: string | undefined;
 
     constructor(data?: ICreateTodoItemCommand) {
         if (data) {
@@ -782,6 +783,7 @@ export class CreateTodoItemCommand implements ICreateTodoItemCommand {
         if (_data) {
             this.listId = _data["listId"];
             this.title = _data["title"];
+            this.itemColour = _data["itemColour"];
         }
     }
 
@@ -796,6 +798,7 @@ export class CreateTodoItemCommand implements ICreateTodoItemCommand {
         data = typeof data === 'object' ? data : {};
         data["listId"] = this.listId;
         data["title"] = this.title;
+        data["itemColour"] = this.itemColour;
         return data;
     }
 }
@@ -803,11 +806,13 @@ export class CreateTodoItemCommand implements ICreateTodoItemCommand {
 export interface ICreateTodoItemCommand {
     listId?: number;
     title?: string | undefined;
+    itemColour?: string | undefined;
 }
 
 export class UpdateTodoItemCommand implements IUpdateTodoItemCommand {
     id?: number;
     title?: string | undefined;
+    itemColour?: string | undefined;
     done?: boolean;
 
     constructor(data?: IUpdateTodoItemCommand) {
@@ -823,6 +828,7 @@ export class UpdateTodoItemCommand implements IUpdateTodoItemCommand {
         if (_data) {
             this.id = _data["id"];
             this.title = _data["title"];
+            this.itemColour = _data["itemColour"];
             this.done = _data["done"];
         }
     }
@@ -838,6 +844,7 @@ export class UpdateTodoItemCommand implements IUpdateTodoItemCommand {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["title"] = this.title;
+        data["itemColour"] = this.itemColour;
         data["done"] = this.done;
         return data;
     }
@@ -846,6 +853,7 @@ export class UpdateTodoItemCommand implements IUpdateTodoItemCommand {
 export interface IUpdateTodoItemCommand {
     id?: number;
     title?: string | undefined;
+    itemColour?: string | undefined;
     done?: boolean;
 }
 
@@ -853,6 +861,7 @@ export class UpdateTodoItemDetailCommand implements IUpdateTodoItemDetailCommand
     id?: number;
     listId?: number;
     priority?: PriorityLevel;
+    itemColour?: string | undefined;
     note?: string | undefined;
 
     constructor(data?: IUpdateTodoItemDetailCommand) {
@@ -869,6 +878,7 @@ export class UpdateTodoItemDetailCommand implements IUpdateTodoItemDetailCommand
             this.id = _data["id"];
             this.listId = _data["listId"];
             this.priority = _data["priority"];
+            this.itemColour = _data["itemColour"];
             this.note = _data["note"];
         }
     }
@@ -885,6 +895,7 @@ export class UpdateTodoItemDetailCommand implements IUpdateTodoItemDetailCommand
         data["id"] = this.id;
         data["listId"] = this.listId;
         data["priority"] = this.priority;
+        data["itemColour"] = this.itemColour;
         data["note"] = this.note;
         return data;
     }
@@ -894,6 +905,7 @@ export interface IUpdateTodoItemDetailCommand {
     id?: number;
     listId?: number;
     priority?: PriorityLevel;
+    itemColour?: string | undefined;
     note?: string | undefined;
 }
 
@@ -906,6 +918,7 @@ export enum PriorityLevel {
 
 export class TodosVm implements ITodosVm {
     priorityLevels?: PriorityLevelDto[];
+    colours?: ColourDto[];
     lists?: TodoListDto[];
 
     constructor(data?: ITodosVm) {
@@ -923,6 +936,11 @@ export class TodosVm implements ITodosVm {
                 this.priorityLevels = [] as any;
                 for (let item of _data["priorityLevels"])
                     this.priorityLevels!.push(PriorityLevelDto.fromJS(item));
+            }
+            if (Array.isArray(_data["colours"])) {
+                this.colours = [] as any;
+                for (let item of _data["colours"])
+                    this.colours!.push(ColourDto.fromJS(item));
             }
             if (Array.isArray(_data["lists"])) {
                 this.lists = [] as any;
@@ -946,6 +964,11 @@ export class TodosVm implements ITodosVm {
             for (let item of this.priorityLevels)
                 data["priorityLevels"].push(item.toJSON());
         }
+        if (Array.isArray(this.colours)) {
+            data["colours"] = [];
+            for (let item of this.colours)
+                data["colours"].push(item.toJSON());
+        }
         if (Array.isArray(this.lists)) {
             data["lists"] = [];
             for (let item of this.lists)
@@ -957,6 +980,7 @@ export class TodosVm implements ITodosVm {
 
 export interface ITodosVm {
     priorityLevels?: PriorityLevelDto[];
+    colours?: ColourDto[];
     lists?: TodoListDto[];
 }
 
@@ -998,6 +1022,42 @@ export class PriorityLevelDto implements IPriorityLevelDto {
 export interface IPriorityLevelDto {
     value?: number;
     name?: string | undefined;
+}
+
+export class ColourDto implements IColourDto {
+    code?: string | undefined;
+
+    constructor(data?: IColourDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.code = _data["code"];
+        }
+    }
+
+    static fromJS(data: any): ColourDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ColourDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["code"] = this.code;
+        return data;
+    }
+}
+
+export interface IColourDto {
+    code?: string | undefined;
 }
 
 export class TodoListDto implements ITodoListDto {
@@ -1060,6 +1120,7 @@ export class TodoItemDto implements ITodoItemDto {
     id?: number;
     listId?: number;
     title?: string | undefined;
+    itemColour?: string | undefined;
     done?: boolean;
     priority?: number;
     note?: string | undefined;
@@ -1078,6 +1139,7 @@ export class TodoItemDto implements ITodoItemDto {
             this.id = _data["id"];
             this.listId = _data["listId"];
             this.title = _data["title"];
+            this.itemColour = _data["itemColour"];
             this.done = _data["done"];
             this.priority = _data["priority"];
             this.note = _data["note"];
@@ -1096,6 +1158,7 @@ export class TodoItemDto implements ITodoItemDto {
         data["id"] = this.id;
         data["listId"] = this.listId;
         data["title"] = this.title;
+        data["itemColour"] = this.itemColour;
         data["done"] = this.done;
         data["priority"] = this.priority;
         data["note"] = this.note;
@@ -1107,6 +1170,7 @@ export interface ITodoItemDto {
     id?: number;
     listId?: number;
     title?: string | undefined;
+    itemColour?: string | undefined;
     done?: boolean;
     priority?: number;
     note?: string | undefined;

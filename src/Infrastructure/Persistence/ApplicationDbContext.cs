@@ -34,7 +34,7 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
+        builder.Entity<TodoItem>().Property(p => p.ItemColour).HasMaxLength(255).HasColumnType("nvarchar");
         base.OnModelCreating(builder);
     }
 
