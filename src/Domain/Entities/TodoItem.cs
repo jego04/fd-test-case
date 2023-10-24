@@ -10,6 +10,8 @@ public class TodoItem : BaseAuditableEntity
 
     public PriorityLevel Priority { get; set; }
 
+    public string? ItemColour { get; set; }
+
     public DateTime? Reminder { get; set; }
 
     private bool _done;

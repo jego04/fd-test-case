@@ -452,6 +452,10 @@
           "title": {
             "type": "string",
             "nullable": true
+          },
+          "itemColour": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -464,6 +468,10 @@
             "format": "int32"
           },
           "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "itemColour": {
             "type": "string",
             "nullable": true
           },
@@ -486,6 +494,10 @@
           },
           "priority": {
             "$ref": "#/components/schemas/PriorityLevel"
+          },
+          "itemColour": {
+            "type": "string",
+            "nullable": true
           },
           "note": {
             "type": "string",
@@ -519,6 +531,12 @@
               "$ref": "#/components/schemas/PriorityLevelDto"
             }
           },
+          "colours": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ColourDto"
+            }
+          },
           "lists": {
             "type": "array",
             "items": {
@@ -536,6 +554,16 @@
             "format": "int32"
           },
           "name": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ColourDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "code": {
             "type": "string",
             "nullable": true
           }
@@ -578,6 +606,10 @@
             "format": "int32"
           },
           "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "itemColour": {
             "type": "string",
             "nullable": true
           },

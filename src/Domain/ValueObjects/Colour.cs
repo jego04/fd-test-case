@@ -60,6 +60,9 @@ public class Colour : ValueObject
         return Code;
     }
 
+    public static IEnumerable<Colour> GetSupportedColours() => SupportedColours; 
+
+
     protected static IEnumerable<Colour> SupportedColours
     {
         get
