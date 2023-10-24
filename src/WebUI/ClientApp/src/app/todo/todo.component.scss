@@ -36,3 +36,26 @@
 .modal-footer {
   display: block;
 }
+
+.box {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px;
+ }
+ 
+ .box-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 5px;
+  padding: 2px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  &:hover {
+    background-color: black;
+  }
+ }
+
+ .box-value {
+  padding-inline: 2em;
+ }

@@ -82,6 +82,10 @@ export class TodoComponent implements OnInit {
     });
   }
 
+  setColorWhenClicked(color: string) {
+    this.itemDetailsFormGroup.get('itemColour').patchValue(color);
+  }
+
   // Lists
   remainingItems(list: TodoListDto): number {
     return list.items.filter((t) => !t.done).length;

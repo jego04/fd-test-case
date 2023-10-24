@@ -188,16 +188,27 @@
           </option>
         </select>
       </div>
+      <div class="box">
+        <div
+          class="box-item"
+          *ngFor="let colour of coloursList; index as i"
+          (click)="setColorWhenClicked(colour.code)"
+        >
+          <span [style.background-color]="colour.code" class="box-value"
+            >&nbsp;</span
+          >
+        </div>
+      </div>
 
       <!-- Colour -->
-      <div class="form-group">
+      <!-- <div class="form-group">
         <label for="itemColour">Colour</label>
         <select class="form-control" formControlName="itemColour">
           <option [ngValue]="colour.code" *ngFor="let colour of coloursList">
-            {{ colour.code }}
+            <p [style.color]="colour.code">colour.code</p>
           </option>
         </select>
-      </div>
+      </div> -->
       <!-- End of Colour -->
 
       <div class="form-group">
