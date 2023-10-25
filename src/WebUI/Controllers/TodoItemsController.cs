@@ -5,6 +5,8 @@ using Todo_App.Application.TodoItems.Commands.DeleteTodoItem;
 using Todo_App.Application.TodoItems.Commands.UpdateTodoItem;
 using Todo_App.Application.TodoItems.Commands.UpdateTodoItemDetail;
 using Todo_App.Application.TodoItems.Queries.GetTodoItemsWithPagination;
+using Todo_App.Application.TodoItemTags.Commands.CreateTodoItemTag;
+using Todo_App.Application.TodoItemTags.Queries;
 
 namespace Todo_App.WebUI.Controllers;
 
@@ -14,6 +16,25 @@ public class TodoItemsController : ApiControllerBase
     public async Task<ActionResult<PaginatedList<TodoItemBriefDto>>> GetTodoItemsWithPagination([FromQuery] GetTodoItemsWithPaginationQuery query)
     {
         return await Mediator.Send(query);
+    }
+
+    [HttpGet("Tag")]
+    public async Task<ActionResult<IList<TodoItemsTagDto>>> GetTags()
+    {
+        var data = await Mediator.Send(new GetTodoItemsTagQuery());
+
+        if(data.Count == 0)
+        {
+            return NoContent();
+        }
+
+        return Ok(data);
+    }
+
+    [HttpPost("Tag")]
+    public async Task<ActionResult<int>> Create(CreateTodoItemTagCommand command)
+    {
+        return await Mediator.Send(command);
     }
 
     [HttpPost]
