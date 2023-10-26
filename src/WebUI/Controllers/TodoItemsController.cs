@@ -31,6 +31,19 @@ public class TodoItemsController : ApiControllerBase
         return Ok(data);
     }
 
+    [HttpGet("Tag/{id}")]
+    public async Task<ActionResult<IList<TodoItemsTagDto>>> GetTagsByItemId(int id)
+    {
+        var data = await Mediator.Send(new GetTagByItemIdQuery {  ItemId = id } );
+
+        if (data.Count == 0)
+        {
+            return Ok(new List<TodoItemsTagDto>());
+        }
+
+        return Ok(data);
+    }
+
     [HttpPost("Tag")]
     public async Task<ActionResult<int>> Create(CreateTodoItemTagCommand command)
     {

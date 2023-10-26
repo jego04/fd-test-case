@@ -7,6 +7,7 @@ import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { TodoComponent } from './todo/todo.component';
 import { TokenComponent } from './token/token.component';
 import { ToDoListResolver } from './services/todolist.resolver';
+import { ToDoItemTagResolver } from './services/todoitem-tag.resolver';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },
@@ -15,7 +16,7 @@ export const routes: Routes = [
   {
     path: 'todo',
     component: TodoComponent,
-    resolve: { resolvedList: ToDoListResolver },
+    resolve: { resolvedList: ToDoListResolver, itemTags: ToDoItemTagResolver },
   },
   { path: 'token', component: TokenComponent, canActivate: [AuthorizeGuard] },
 ];

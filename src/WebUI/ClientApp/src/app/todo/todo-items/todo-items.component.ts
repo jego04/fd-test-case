@@ -1,13 +1,23 @@
-import { Component, Input, OnInit, TemplateRef } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnInit,
+  TemplateRef,
+} from '@angular/core';
 import { FormBuilder } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
-import { Observable, take } from 'rxjs';
+import { Observable, map, take, tap } from 'rxjs';
+import { TodoItemService } from 'src/app/services/todoitem.service';
 import { TodoListService } from 'src/app/services/todolist.service';
 import {
   CreateTodoItemCommand,
+  CreateTodoItemTagCommand,
   PriorityLevelDto,
   TodoItemDto,
   TodoItemsClient,
+  TodoItemsTagDto,
   TodoListDto,
   TodoListsClient,
   TodosVm,
@@ -19,6 +29,7 @@ import {
   selector: 'app-todo-items-component',
   templateUrl: './todo-items.component.html',
   styleUrls: ['./todo-items.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TodoItemsComponent implements OnInit {
   debug: boolean = false;
@@ -30,11 +41,14 @@ export class TodoItemsComponent implements OnInit {
   deleteListModalRef: BsModalRef;
   listOptionsModalRef: BsModalRef;
   selectedItem: TodoItemDto;
-  priorityLevels: PriorityLevelDto[];
   inputTagVisible: boolean = false;
-  @Input() data: TodosVm;
+  @Input() priorityLevels: PriorityLevelDto[];
+  @Input() data: Observable<TodosVm>;
   @Input() selectedList: TodoListDto;
   @Input() lists: TodoListDto[];
+
+  filteredTags$: Observable<TodoItemsTagDto[]>;
+  tagInput: string;
 
   itemDetailsFormGroup = this.fb.group({
     id: [null],
@@ -47,16 +61,29 @@ export class TodoItemsComponent implements OnInit {
   constructor(
     private modalService: BsModalService,
     private itemsClient: TodoItemsClient,
+    private itemService: TodoItemService,
     private listsClient: TodoListsClient,
     private listService: TodoListService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    this.priorityLevels = this.data.priorityLevels;
+    this.filteredTags$ = this.itemService.filteredTags$;
   }
 
   addTag() {
+    const itemValue = {
+      itemId: this.selectedItem.id,
+      name: this.tagInput,
+    };
+    if (!itemValue.name) {
+      alert('EMPTY');
+    } else {
+      this.itemService
+        .createTag(itemValue as CreateTodoItemTagCommand)
+        .subscribe(() => {});
+    }
     this.toggleInputTag();
   }
 
@@ -76,6 +103,8 @@ export class TodoItemsComponent implements OnInit {
   showItemDetailsModal(template: TemplateRef<any>, item: TodoItemDto): void {
     this.selectedItem = item;
     this.itemDetailsFormGroup.patchValue(this.selectedItem);
+
+    this.filteredTags$ = this.itemService.getTagsByItemId(item.id);
 
     this.itemDetailsModalRef = this.modalService.show(template);
     this.itemDetailsModalRef.onHidden.subscribe(() => {

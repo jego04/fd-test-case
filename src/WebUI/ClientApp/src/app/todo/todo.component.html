@@ -36,8 +36,9 @@
     </div>
     <div class="col-sm-8">
       <app-todo-items-component
-        [data]="todoList$ | async"
+        [data]="todoList$"
         [selectedList]="selectedList"
+        [priorityLevels]="(todoList$ | async).priorityLevels"
       ></app-todo-items-component>
     </div>
   </div>
