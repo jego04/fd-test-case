@@ -227,13 +227,10 @@ export class TodoItemsComponent implements OnInit {
       const itemIndex = this.selectedList.items.indexOf(this.selectedItem);
       this.selectedList.items.splice(itemIndex, 1);
     } else {
-      this.itemsClient.delete(item.id).subscribe(
-        () =>
-          (this.selectedList.items = this.selectedList.items.filter(
-            (t) => t.id !== item.id
-          )),
-        (error) => console.error(error)
-      );
+      this.listService
+        .deleteItemInList(this.selectedList.id, item.id)
+        .pipe(take(1))
+        .subscribe();
     }
   }
 

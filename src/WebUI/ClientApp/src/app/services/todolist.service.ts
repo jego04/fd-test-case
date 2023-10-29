@@ -60,6 +60,31 @@ export class TodoListService {
     );
   }
 
+  deleteItemInList(id: number, itemId: number) {
+    return this.lists$.pipe(
+      take(1),
+      switchMap((lists) =>
+        this.itemsClient.delete(itemId).pipe(
+          take(1),
+          map((r) => {
+            const idx = lists.lists.findIndex((f) => f.id == id);
+            const items = lists.lists[idx].items.findIndex(
+              (f) => f.id == itemId
+            );
+            lists.lists[idx].items.splice(items, 1);
+            this._itemLists.next(lists.lists[idx]);
+            this._lists.next(lists);
+            return r;
+          })
+        )
+      ),
+      catchError((err) => {
+        console.log(err);
+        return of(err);
+      })
+    );
+  }
+
   updateItemDetails(id: number, command: UpdateTodoItemDetailCommand) {
     return this.lists$.pipe(
       take(1),
