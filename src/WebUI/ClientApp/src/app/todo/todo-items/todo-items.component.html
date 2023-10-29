@@ -179,16 +179,22 @@
         </div>
         <div class="form-group">
           <div class="box tag">
-            <div class="box-item tag" *ngFor="let tag of filteredTags$ | async">
+            <div
+              class="box-item tag"
+              *ngFor="let tag of filteredTags$ | async; index as i"
+            >
               <span class="box-value tag">{{ tag.name }}</span>
-              <button type="button" class="btn btn-danger btn-circle btn-xl">
+              <button
+                type="button"
+                (click)="removeTag(tag.id)"
+                class="btn btn-danger btn-circle btn-xl"
+              >
                 -
               </button>
             </div>
           </div>
         </div>
       </div>
-
       <div class="form-group">
         <label for="note">Note</label>
         <textarea

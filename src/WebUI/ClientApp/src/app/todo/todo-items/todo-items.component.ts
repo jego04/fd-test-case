@@ -72,6 +72,10 @@ export class TodoItemsComponent implements OnInit {
     this.filteredTags$ = this.itemService.filteredTags$;
   }
 
+  removeTag(id: number) {
+    this.itemService.removeTag(id).pipe(take(1)).subscribe();
+  }
+
   addTag() {
     const itemValue = {
       itemId: this.selectedItem.id,
@@ -82,7 +86,7 @@ export class TodoItemsComponent implements OnInit {
     } else {
       this.itemService
         .createTag(itemValue as CreateTodoItemTagCommand)
-        .subscribe(() => {});
+        .subscribe((res) => {});
     }
     this.toggleInputTag();
   }

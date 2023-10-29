@@ -16,6 +16,7 @@ import {
   take,
   tap,
 } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class TodoItemService {
@@ -61,17 +62,34 @@ export class TodoItemService {
     );
   }
 
+  removeTag(id: number) {
+    return this.filteredTags$.pipe(
+      take(1),
+      switchMap((tags) =>
+        this.itemsClient.deleteTag(id).pipe(
+          map((res) => {
+            const idx = tags.findIndex((f) => f.id == id);
+            tags.splice(idx, 1);
+            this._filteredTags.next(tags);
+            return res;
+          })
+        )
+      )
+    );
+  }
+
   createTag(tag: CreateTodoItemTagCommand): Observable<TodoItemsTagDto[]> {
     return this.filteredTags$.pipe(
       take(1),
       switchMap((tags) =>
         this.itemsClient.create2(tag as CreateTodoItemTagCommand).pipe(
-          tap(() => console.log(tags)),
-          map(() => {
+          map((res) => {
+            tag = { id: res, ...tag } as TodoItemsTagDto;
             tags.push(tag);
             this._filteredTags.next(tags);
             return tags;
-          })
+          }),
+          tap(() => console.log(tags))
         )
       ),
       catchError((err) => {

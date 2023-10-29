@@ -6,6 +6,7 @@ using Todo_App.Application.TodoItems.Commands.UpdateTodoItem;
 using Todo_App.Application.TodoItems.Commands.UpdateTodoItemDetail;
 using Todo_App.Application.TodoItems.Queries.GetTodoItemsWithPagination;
 using Todo_App.Application.TodoItemTags.Commands.CreateTodoItemTag;
+using Todo_App.Application.TodoItemTags.Commands.DeleteTodoItemTag;
 using Todo_App.Application.TodoItemTags.Queries;
 
 namespace Todo_App.WebUI.Controllers;
@@ -78,6 +79,14 @@ public class TodoItemsController : ApiControllerBase
         }
 
         await Mediator.Send(command);
+
+        return NoContent();
+    }
+
+    [HttpDelete("Tag/{id}")]
+    public async Task<ActionResult> DeleteTag(int id)
+    {
+        await Mediator.Send(new DeleteTodoItemTagCommand(id));
 
         return NoContent();
     }
