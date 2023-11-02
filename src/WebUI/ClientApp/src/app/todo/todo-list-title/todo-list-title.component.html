@@ -1,0 +1,101 @@
+<ng-container *ngIf="selected$ | async as selectedList">
+  <div class="clearfix">
+    <h2 class="float-start">{{ selectedList.title }}</h2>
+    <button
+      id="listOptions"
+      class="btn btn-default float-end"
+      title="List Options..."
+      (click)="showListOptionsModal(listOptionsModalTemplate, selectedList)"
+    >
+      <i class="bi bi-three-dots-vertical"></i>
+    </button>
+  </div>
+</ng-container>
+
+<ng-template #listOptionsModalTemplate>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">List Options</h4>
+    <button
+      type="button"
+      class="close btn-close pull-right"
+      aria-label="Close"
+      (click)="listOptionsModalRef.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <label for="inputListTitle">Title</label>
+      <input
+        type="text"
+        class="form-control"
+        id="inputListTitle"
+        placeholder="List name..."
+        [(ngModel)]="listOptionsEditor.title"
+        (keyup.enter)="updateListOptions()"
+      />
+    </div>
+    <div *ngIf="debug">
+      <pre>{{ listOptionsEditor | json }}</pre>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="clearfix">
+      <div class="float-start">
+        <button
+          class="btn btn-default text-danger"
+          (click)="confirmDeleteList(deleteListModalTemplate)"
+        >
+          Delete
+        </button>
+      </div>
+      <div class="float-end">
+        <button class="btn btn-default" (click)="listOptionsModalRef.hide()">
+          Cancel
+        </button>
+        <button class="btn btn-primary" (click)="updateListOptions()">
+          Update
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #deleteListModalTemplate>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Delete "{{ selectedList?.title }}"?</h4>
+    <button
+      type="button"
+      class="close btn-close pull-right"
+      aria-label="Close"
+      (click)="deleteListModalRef.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>All items will be permanently deleted.</p>
+    <div *ngIf="debug">
+      <pre>{{ selectedList | json }}</pre>
+    </div>
+  </div>
+  <div class="modal-footer clearfix">
+    <div class="float-end">
+      <button
+        type="button"
+        class="btn btn-default"
+        (click)="deleteListModalRef.hide()"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        class="btn btn-danger"
+        (click)="deleteListConfirmed()"
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+</ng-template>

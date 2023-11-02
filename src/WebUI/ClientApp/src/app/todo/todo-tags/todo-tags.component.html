@@ -1,0 +1,12 @@
+<div class="mb-2">
+  <div class="form-group">
+    <div class="box tag">
+      <ng-container *ngFor="let tag of tagsWithCount$ | async">
+        <div class="box-item tag" (click)="filterTodoItems(tag.itemIds)">
+          <span class="box-value tag">{{ tag.name }}</span>
+          <span class="ms-2">{{ tag.count }}</span>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>

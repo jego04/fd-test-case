@@ -16,8 +16,12 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface ITodoItemsClient {
-    getTodoItemsWithPagination(listId: number | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfTodoItemBriefDto>;
+    getTodoItemsWithPagination(listId: number | null | undefined, searchTxt: string | null | undefined, itemIds: number[] | null | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfTodoItemBriefDto>;
     create(command: CreateTodoItemCommand): Observable<number>;
+    getTags(): Observable<TodoItemsTagDto[]>;
+    create2(command: CreateTodoItemTagCommand): Observable<number>;
+    getTagsByItemId(id: number): Observable<TodoItemsTagDto[]>;
+    deleteTag(id: number): Observable<FileResponse>;
     update(id: number, command: UpdateTodoItemCommand): Observable<FileResponse>;
     delete(id: number): Observable<FileResponse>;
     updateItemDetails(id: number | undefined, command: UpdateTodoItemDetailCommand): Observable<FileResponse>;
@@ -36,12 +40,14 @@ export class TodoItemsClient implements ITodoItemsClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    getTodoItemsWithPagination(listId: number | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfTodoItemBriefDto> {
+    getTodoItemsWithPagination(listId: number | null | undefined, searchTxt: string | null | undefined, itemIds: number[] | null | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfTodoItemBriefDto> {
         let url_ = this.baseUrl + "/api/TodoItems?";
-        if (listId === null)
-            throw new Error("The parameter 'listId' cannot be null.");
-        else if (listId !== undefined)
+        if (listId !== undefined && listId !== null)
             url_ += "ListId=" + encodeURIComponent("" + listId) + "&";
+        if (searchTxt !== undefined && searchTxt !== null)
+            url_ += "SearchTxt=" + encodeURIComponent("" + searchTxt) + "&";
+        if (itemIds !== undefined && itemIds !== null)
+            itemIds && itemIds.forEach(item => { url_ += "ItemIds=" + encodeURIComponent("" + item) + "&"; });
         if (pageNumber === null)
             throw new Error("The parameter 'pageNumber' cannot be null.");
         else if (pageNumber !== undefined)
@@ -141,6 +147,221 @@ export class TodoItemsClient implements ITodoItemsClient {
     
             return _observableOf(result200);
             }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getTags(): Observable<TodoItemsTagDto[]> {
+        let url_ = this.baseUrl + "/api/TodoItems/Tag";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetTags(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetTags(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<TodoItemsTagDto[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<TodoItemsTagDto[]>;
+        }));
+    }
+
+    protected processGetTags(response: HttpResponseBase): Observable<TodoItemsTagDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(TodoItemsTagDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    create2(command: CreateTodoItemTagCommand): Observable<number> {
+        let url_ = this.baseUrl + "/api/TodoItems/Tag";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreate2(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreate2(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<number>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<number>;
+        }));
+    }
+
+    protected processCreate2(response: HttpResponseBase): Observable<number> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getTagsByItemId(id: number): Observable<TodoItemsTagDto[]> {
+        let url_ = this.baseUrl + "/api/TodoItems/Tag/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetTagsByItemId(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetTagsByItemId(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<TodoItemsTagDto[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<TodoItemsTagDto[]>;
+        }));
+    }
+
+    protected processGetTagsByItemId(response: HttpResponseBase): Observable<TodoItemsTagDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(TodoItemsTagDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    deleteTag(id: number): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/TodoItems/Tag/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteTag(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteTag(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FileResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FileResponse>;
+        }));
+    }
+
+    protected processDeleteTag(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -719,8 +940,10 @@ export interface IPaginatedListOfTodoItemBriefDto {
 
 export class TodoItemBriefDto implements ITodoItemBriefDto {
     id?: number;
-    listId?: number;
+    listId?: number | undefined;
     title?: string | undefined;
+    itemColour?: string | undefined;
+    note?: string | undefined;
     done?: boolean;
 
     constructor(data?: ITodoItemBriefDto) {
@@ -737,6 +960,8 @@ export class TodoItemBriefDto implements ITodoItemBriefDto {
             this.id = _data["id"];
             this.listId = _data["listId"];
             this.title = _data["title"];
+            this.itemColour = _data["itemColour"];
+            this.note = _data["note"];
             this.done = _data["done"];
         }
     }
@@ -753,6 +978,8 @@ export class TodoItemBriefDto implements ITodoItemBriefDto {
         data["id"] = this.id;
         data["listId"] = this.listId;
         data["title"] = this.title;
+        data["itemColour"] = this.itemColour;
+        data["note"] = this.note;
         data["done"] = this.done;
         return data;
     }
@@ -760,9 +987,95 @@ export class TodoItemBriefDto implements ITodoItemBriefDto {
 
 export interface ITodoItemBriefDto {
     id?: number;
-    listId?: number;
+    listId?: number | undefined;
     title?: string | undefined;
+    itemColour?: string | undefined;
+    note?: string | undefined;
     done?: boolean;
+}
+
+export class TodoItemsTagDto implements ITodoItemsTagDto {
+    id?: number;
+    todoItemId?: number;
+    name?: string | undefined;
+
+    constructor(data?: ITodoItemsTagDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.todoItemId = _data["todoItemId"];
+            this.name = _data["name"];
+        }
+    }
+
+    static fromJS(data: any): TodoItemsTagDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new TodoItemsTagDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["todoItemId"] = this.todoItemId;
+        data["name"] = this.name;
+        return data;
+    }
+}
+
+export interface ITodoItemsTagDto {
+    id?: number;
+    todoItemId?: number;
+    name?: string | undefined;
+}
+
+export class CreateTodoItemTagCommand implements ICreateTodoItemTagCommand {
+    itemId?: number;
+    name?: string | undefined;
+
+    constructor(data?: ICreateTodoItemTagCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.itemId = _data["itemId"];
+            this.name = _data["name"];
+        }
+    }
+
+    static fromJS(data: any): CreateTodoItemTagCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateTodoItemTagCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["itemId"] = this.itemId;
+        data["name"] = this.name;
+        return data;
+    }
+}
+
+export interface ICreateTodoItemTagCommand {
+    itemId?: number;
+    name?: string | undefined;
 }
 
 export class CreateTodoItemCommand implements ICreateTodoItemCommand {

@@ -1,0 +1,41 @@
+<h1>Todo</h1>
+<p>This is a complex todo list component.</p>
+<div class="row">
+  <div class="col-sm-4">
+    <app-todo-list-nav-component></app-todo-list-nav-component>
+  </div>
+  <div class="col-sm-8">
+    <app-todo-tags-component
+      (itemIds)="filterByTag($event)"
+    ></app-todo-tags-component>
+    <app-todo-search-bar-component
+      [items]="filteredItems"
+      [listId]="listService.selectedListId"
+      (filteredItems)="updateItemsList($event)"
+    ></app-todo-search-bar-component>
+
+    <!-- Items -->
+    <ng-container *ngIf="!listService.selectedListId">
+      <div *ngFor="let item of paginatedItems$ | async">
+        <div class="todo-home">
+          <div class="d-flex">
+            <div class="flex-fill">
+              <div
+                class="form-control item-input-control mb-2"
+                [routerLink]="[item.listId]"
+              >
+                {{ item.title }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <!-- End of items -->
+    <router-outlet></router-outlet>
+    <app-todo-pagination-component
+      [pagination]="pagination$ | async"
+      (selectPage)="onSelectPage($event)"
+    ></app-todo-pagination-component>
+  </div>
+</div>
