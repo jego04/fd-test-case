@@ -1,0 +1,70 @@
+<div class="clearfix">
+  <h2 class="float-start">Lists</h2>
+  <button
+    class="btn btn-default float-end"
+    title="New List..."
+    (click)="showNewListModal(newListModalTemplate)"
+  >
+    <i class="bi bi-journal-plus"></i>
+  </button>
+</div>
+<ul class="list-group">
+  <li
+    *ngFor="let list of (listService.lists$ | async).lists; index as i"
+    class="list-group-item"
+    [ngClass]="{ active: list.id == listService.selectedListId }"
+    [routerLink]="[list.id]"
+    (click)="selectList(list.id)"
+  >
+    <div class="clearfix">
+      <div class="float-start">
+        {{ list.title }}
+      </div>
+      <div class="float-end text-right">
+        <span class="badge badge-light">{{ remainingItems(list) }}</span>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<ng-template #newListModalTemplate>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">New List</h4>
+    <button
+      type="button"
+      class="close btn-close pull-right"
+      aria-label="Close"
+      (click)="newListCancelled()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <label for="title">Title</label>
+      <input
+        type="text"
+        class="form-control"
+        id="title"
+        placeholder="List title..."
+        [(ngModel)]="newListEditor.title"
+        [ngClass]="{ 'is-invalid': newListEditor.error }"
+        (keyup.enter)="addList()"
+      />
+      <div *ngIf="newListEditor.error" class="invalid-feedback">
+        {{ newListEditor.error }}
+      </div>
+    </div>
+    <div *ngIf="debug">
+      <pre>{{ newListEditor | json }}</pre>
+    </div>
+  </div>
+  <div class="modal-footer clearfix">
+    <div class="float-end">
+      <button class="btn btn-default" (click)="newListCancelled()">
+        Cancel
+      </button>
+      <button class="btn btn-primary" (click)="addList()">Create</button>
+    </div>
+  </div>
+</ng-template>

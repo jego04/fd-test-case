@@ -4,10 +4,14 @@ import { AuthorizeGuard } from '../api-authorization/authorize.guard';
 import { HomeComponent } from './home/home.component';
 import { CounterComponent } from './counter/counter.component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
-import { TodoComponent } from './todo/todo.component';
 import { TokenComponent } from './token/token.component';
-import { ToDoListResolver } from './services/todolist.resolver';
+import {
+  ToDoListItemResolver,
+  ToDoListResolver,
+} from './services/todolist.resolver';
 import { ToDoItemTagResolver } from './services/todoitem-tag.resolver';
+import { TodoHomeComponent } from './todo/todo-home.component';
+import { TodoItemsComponent } from './todo/todo-items/todo-items.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },
@@ -15,8 +19,19 @@ export const routes: Routes = [
   { path: 'fetch-data', component: FetchDataComponent },
   {
     path: 'todo',
-    component: TodoComponent,
-    resolve: { resolvedList: ToDoListResolver, itemTags: ToDoItemTagResolver },
+    resolve: { resolvedList: ToDoListResolver },
+    component: TodoHomeComponent,
+    children: [
+      {
+        path: ':listId',
+        resolve: {
+          paginatedItems: ToDoListItemResolver,
+          itemTags: ToDoItemTagResolver,
+          resolvedList: ToDoListResolver,
+        },
+        component: TodoItemsComponent,
+      },
+    ],
   },
   { path: 'token', component: TokenComponent, canActivate: [AuthorizeGuard] },
 ];

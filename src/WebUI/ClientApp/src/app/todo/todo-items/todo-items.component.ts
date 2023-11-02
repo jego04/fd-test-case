@@ -6,7 +6,7 @@ import {
   TemplateRef,
 } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { Observable, map, take, tap } from 'rxjs';
 import { TodoItemService } from 'src/app/services/todoitem.service';
@@ -36,17 +36,17 @@ export class TodoItemsComponent implements OnInit {
   deleting: boolean = false;
   deleteCountDown: number = 0;
   deleteCountDownInterval: any;
-  listOptionsEditor: any = {};
   itemDetailsModalRef: BsModalRef;
-  deleteListModalRef: BsModalRef;
-  listOptionsModalRef: BsModalRef;
   selectedItem: TodoItemDto;
   inputTagVisible: boolean = false;
   @Input() priorityLevels: PriorityLevelDto[];
   @Input() data: Observable<TodosVm>;
-  @Input() selectedList: TodoListDto;
+  selectedList: TodoListDto;
   @Input() lists: TodoListDto[];
 
+  items$: Observable<TodoItemDto[]>;
+  listData$: Observable<TodosVm>;
+  listId: number;
   filteredTags$: Observable<TodoItemsTagDto[]>;
   tagInput: string;
 
@@ -70,6 +70,11 @@ export class TodoItemsComponent implements OnInit {
 
   ngOnInit(): void {
     this.filteredTags$ = this.itemService.filteredTags$;
+    this.items$ = this.listService.items$;
+    this.listData$ = this.listService.lists$;
+    this.route.paramMap.pipe(take(1)).subscribe((r) => {
+      this.listId = +r.get('listId');
+    });
   }
 
   removeTag(id: number) {
@@ -95,10 +100,6 @@ export class TodoItemsComponent implements OnInit {
     this.inputTagVisible = !this.inputTagVisible;
   }
 
-  updateItemTag() {
-    alert('logged');
-  }
-
   setColorWhenClicked(color: string) {
     this.itemDetailsFormGroup.get('itemColour').patchValue(color);
   }
@@ -106,82 +107,54 @@ export class TodoItemsComponent implements OnInit {
   // Items
   showItemDetailsModal(template: TemplateRef<any>, item: TodoItemDto): void {
     this.selectedItem = item;
-    this.itemDetailsFormGroup.patchValue(this.selectedItem);
+    console.log(this.selectedItem);
+    this.listData$.pipe(take(1)).subscribe((res) => {
+      const idx = res.lists.findIndex((f) => f.id == item.listId);
+      const value = res.lists[idx].items.find((f) => f.id == item.id);
+      this.itemDetailsFormGroup.patchValue(value);
+    });
 
     this.filteredTags$ = this.itemService.getTagsByItemId(item.id);
-
     this.itemDetailsModalRef = this.modalService.show(template);
     this.itemDetailsModalRef.onHidden.subscribe(() => {
       this.stopDeleteCountDown();
     });
   }
 
-  updateItemDetails(): void {
+  updateItemDetails(listId: number): void {
     const item = new UpdateTodoItemDetailCommand(
       this.itemDetailsFormGroup.value
     );
-
     this.listService
-      .updateItemDetails(this.selectedItem.id, item)
+      .updateItemDetails(this.selectedItem.id, item, listId)
       .pipe(take(1))
-      .subscribe((res) => {
-        this.selectedItem.priority = item.priority;
-        this.selectedItem.note = item.note;
+      .subscribe(() => {
         this.itemDetailsModalRef.hide();
         this.itemDetailsFormGroup.reset();
       });
   }
 
-  showListOptionsModal(template: TemplateRef<any>) {
-    this.listOptionsEditor = {
-      id: this.selectedList.id,
-      title: this.selectedList.title,
-    };
-
-    this.listOptionsModalRef = this.modalService.show(template);
-  }
-
-  updateListOptions() {
-    const list = this.listOptionsEditor as UpdateTodoListCommand;
-    this.listsClient.update(this.selectedList.id, list).subscribe(
-      () => {
-        (this.selectedList.title = this.listOptionsEditor.title),
-          this.listOptionsModalRef.hide();
-        this.listOptionsEditor = {};
-      },
-      (error) => console.error(error)
-    );
-  }
-
-  confirmDeleteList(template: TemplateRef<any>) {
-    this.listOptionsModalRef.hide();
-    this.deleteListModalRef = this.modalService.show(template);
-  }
-
-  deleteListConfirmed(): void {
-    this.listsClient.delete(this.selectedList.id).subscribe(
-      () => {
-        this.deleteListModalRef.hide();
-        this.lists = this.lists.filter((t) => t.id !== this.selectedList.id);
-        this.selectedList = this.lists.length ? this.lists[0] : null;
-      },
-      (error) => console.error(error)
-    );
-  }
-
-  updateItem(item: TodoItemDto, pressedEnter: boolean = false): void {
+  updateItem(
+    item: TodoItemDto,
+    pressedEnter: boolean = false,
+    titleIdx?: number
+  ): void {
     const isNewItem = item.id === 0;
-
-    if (!item.title.trim()) {
-      this.deleteItem(item);
-      return;
+    const isEmpty = item.title.trim();
+    if (!isEmpty) {
+      this.items$
+        .pipe(
+          take(1),
+          map((r) => r.splice(titleIdx, 1))
+        )
+        .subscribe();
     }
 
-    if (item.id === 0) {
+    if (isEmpty.length > 1 && item.id == 0) {
       this.itemsClient
         .create({
           ...item,
-          listId: this.selectedList.id,
+          listId: this.listId,
         } as CreateTodoItemCommand)
         .subscribe(
           (result) => {
@@ -189,12 +162,13 @@ export class TodoItemsComponent implements OnInit {
           },
           (error) => console.error(error)
         );
-    } else {
+    }
+
+    if (item.id != 0)
       this.itemsClient.update(item.id, item).subscribe(
         () => console.log('Update succeeded.'),
         (error) => console.error(error)
       );
-    }
 
     this.selectedItem = null;
 
@@ -223,35 +197,37 @@ export class TodoItemsComponent implements OnInit {
       this.itemDetailsModalRef.hide();
     }
 
-    if (item.id === 0) {
-      const itemIndex = this.selectedList.items.indexOf(this.selectedItem);
-      this.selectedList.items.splice(itemIndex, 1);
-    } else {
-      this.listService
-        .deleteItemInList(this.selectedList.id, item.id)
-        .pipe(take(1))
-        .subscribe();
-    }
+    this.listService
+      .deleteItemInList(this.listId, item.id)
+      .pipe(take(1))
+      .subscribe();
   }
 
   addItem() {
     const item = {
       id: 0,
-      listId: this.selectedList.id,
-      priority: this.priorityLevels[0].value,
+      listId: this.listId,
+      priority: 0,
       title: '',
       itemColour: '',
       done: false,
     } as TodoItemDto;
 
-    this.selectedList.items.push(item);
-    const index = this.selectedList.items.length - 1;
-    this.editItem(item, 'itemTitle' + index);
+    this.items$.pipe(take(1)).subscribe((res) => {
+      res.push(item);
+      const index = res.length - 1;
+      this.editItem(item, 'itemTitle' + index);
+    });
   }
 
   editItem(item: TodoItemDto, inputId: string): void {
     this.selectedItem = item;
-    setTimeout(() => document.getElementById(inputId).focus(), 100);
+    setTimeout(() => {
+      const inputElement = document.getElementById(inputId);
+      if (inputElement) {
+        inputElement.focus();
+      }
+    }, 100);
   }
 
   stopDeleteCountDown() {
