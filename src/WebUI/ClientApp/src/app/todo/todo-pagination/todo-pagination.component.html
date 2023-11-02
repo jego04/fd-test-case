@@ -1,0 +1,23 @@
+<div class="pagination">
+  <button
+    class="btn"
+    (click)="onPrevious()"
+    [disabled]="!pagination.hasPreviousPage"
+  >
+    Previous
+  </button>
+  <div class="pages">
+    <span *ngFor="let page of getPageNumbers(pagination)">
+      <button
+        class="btn"
+        (click)="onSelectPage(page)"
+        [class.active]="page === pagination.pageNumber"
+      >
+        {{ page }}
+      </button>
+    </span>
+  </div>
+  <button class="btn" (click)="onNext()" [disabled]="!pagination.hasNextPage">
+    Next
+  </button>
+</div>

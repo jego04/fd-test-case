@@ -68,7 +68,6 @@
   </div>
   <div class="modal-body" *ngIf="listData$ | async as data">
     <form [formGroup]="itemDetailsFormGroup" class="form">
-      <pre>{{ this.itemDetailsFormGroup.value | json }}</pre>
       <div class="form-group">
         <label for="list">List</label>
         <select id="list" class="form-control" formControlName="listId">

@@ -1,8 +1,10 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  EventEmitter,
   Input,
   OnInit,
+  Output,
   TemplateRef,
 } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
@@ -43,7 +45,6 @@ export class TodoItemsComponent implements OnInit {
   @Input() data: Observable<TodosVm>;
   selectedList: TodoListDto;
   @Input() lists: TodoListDto[];
-
   items$: Observable<TodoItemDto[]>;
   listData$: Observable<TodosVm>;
   listId: number;
@@ -72,8 +73,11 @@ export class TodoItemsComponent implements OnInit {
     this.filteredTags$ = this.itemService.filteredTags$;
     this.items$ = this.listService.items$;
     this.listData$ = this.listService.lists$;
-    this.route.paramMap.pipe(take(1)).subscribe((r) => {
-      this.listId = +r.get('listId');
+
+    this.route.paramMap.subscribe((params) => {
+      const id = +params.get('listId');
+      this.listService.setSelectedList(id);
+      this.listId = id;
     });
   }
 

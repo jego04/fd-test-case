@@ -1,4 +1,4 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   CreateTodoItemTagCommand,
   TodoItemsClient,
@@ -8,15 +8,13 @@ import {
   BehaviorSubject,
   Observable,
   catchError,
-  filter,
   map,
   of,
-  shareReplay,
+  reduce,
   switchMap,
   take,
   tap,
 } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class TodoItemService {
@@ -26,6 +24,14 @@ export class TodoItemService {
   private _filteredTags: BehaviorSubject<TodoItemsTagDto[] | null> =
     new BehaviorSubject(null);
 
+  private _tagsWithCount: BehaviorSubject<any[] | null> = new BehaviorSubject(
+    null
+  );
+
+  get tagsWithCount$(): Observable<any[]> {
+    return this._tagsWithCount.asObservable();
+  }
+
   get tags$(): Observable<TodoItemsTagDto[]> {
     return this._tags.asObservable();
   }
@@ -34,7 +40,7 @@ export class TodoItemService {
     return this._filteredTags.asObservable();
   }
 
-  constructor(private itemsClient: TodoItemsClient, private zone: NgZone) {}
+  constructor(private itemsClient: TodoItemsClient) {}
 
   getTags(): Observable<TodoItemsTagDto[]> {
     return this.itemsClient.getTags().pipe(
@@ -47,6 +53,34 @@ export class TodoItemService {
         return [];
       })
     );
+  }
+
+  getTagsWithCount() {
+    return this.tags$.pipe(
+      take(1),
+      map((tags) => {
+        const result = this.CountNumberOfTags(tags);
+        this._tagsWithCount.next(result);
+        return result;
+      })
+    );
+  }
+
+  CountNumberOfTags(tags: TodoItemsTagDto[]) {
+    const result = [];
+    for (let tag of tags) {
+      let group = result.find((g) => g.name == tag.name);
+      if (!group) {
+        group = { name: tag.name, count: 0, itemIds: [] };
+        result.push(group);
+      }
+      group.count++;
+      if (!group.itemIds.includes(tag.todoItemId)) {
+        group.itemIds.push(tag.todoItemId);
+      }
+    }
+    result.sort((a, b) => b.count - a.count);
+    return result;
   }
 
   getTagsByItemId(id: number): Observable<TodoItemsTagDto[]> {
@@ -69,10 +103,30 @@ export class TodoItemService {
         this.itemsClient.deleteTag(id).pipe(
           map((res) => {
             const idx = tags.findIndex((f) => f.id == id);
+            const removedTagName = tags[idx].name;
             tags.splice(idx, 1);
             this._filteredTags.next(tags);
-            return res;
-          })
+            return {
+              response: res,
+              removedTagName: removedTagName,
+              removedIndex: idx,
+            };
+          }),
+          switchMap((response) =>
+            this.tags$.pipe(
+              take(1),
+              map((tags) => {
+                const idx = tags.findIndex(
+                  (f) => f.id == response.removedIndex
+                );
+                tags.splice(idx, 1);
+                const result = this.CountNumberOfTags(tags);
+                this._tagsWithCount.next(result);
+                this._tags.next(tags);
+                return response.response;
+              })
+            )
+          )
         )
       )
     );
@@ -87,9 +141,21 @@ export class TodoItemService {
             tag = { id: res, ...tag } as TodoItemsTagDto;
             tags.push(tag);
             this._filteredTags.next(tags);
-            return tags;
+            return tag;
           }),
-          tap(() => console.log(tags))
+          switchMap((tag) =>
+            this.tags$.pipe(
+              take(1),
+              map((tags) => {
+                tag = { ...tag, todoItemId: tag.itemId } as TodoItemsTagDto;
+                tags.push(tag);
+                this._tags.next(tags);
+                const result = this.CountNumberOfTags(tags);
+                this._tagsWithCount.next(result);
+                return tag;
+              })
+            )
+          )
         )
       ),
       catchError((err) => {

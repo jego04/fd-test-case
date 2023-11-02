@@ -75,14 +75,22 @@ export class TodoListService {
   ) {}
 
   getPaginatedItems(
-    id: number,
+    id?: number,
+    search: string = '',
+    itemIds: number[] = [],
     page?: number,
     pageSize: number = this.defaultPageSize
   ): Observable<{ items: TodoItemDto[]; pagination: Pagination }> {
     let params: any = {};
     params = this.paramsBuilder.addPaging(params, page, pageSize);
     return this.itemsClient
-      .getTodoItemsWithPagination(id, params.page, params.pageSize)
+      .getTodoItemsWithPagination(
+        id,
+        search,
+        itemIds,
+        params.page,
+        params.pageSize
+      )
       .pipe(
         take(1),
         map((res) => {

@@ -16,7 +16,7 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface ITodoItemsClient {
-    getTodoItemsWithPagination(listId: number | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfTodoItemBriefDto>;
+    getTodoItemsWithPagination(listId: number | null | undefined, searchTxt: string | null | undefined, itemIds: number[] | null | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfTodoItemBriefDto>;
     create(command: CreateTodoItemCommand): Observable<number>;
     getTags(): Observable<TodoItemsTagDto[]>;
     create2(command: CreateTodoItemTagCommand): Observable<number>;
@@ -40,12 +40,14 @@ export class TodoItemsClient implements ITodoItemsClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    getTodoItemsWithPagination(listId: number | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfTodoItemBriefDto> {
+    getTodoItemsWithPagination(listId: number | null | undefined, searchTxt: string | null | undefined, itemIds: number[] | null | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfTodoItemBriefDto> {
         let url_ = this.baseUrl + "/api/TodoItems?";
-        if (listId === null)
-            throw new Error("The parameter 'listId' cannot be null.");
-        else if (listId !== undefined)
+        if (listId !== undefined && listId !== null)
             url_ += "ListId=" + encodeURIComponent("" + listId) + "&";
+        if (searchTxt !== undefined && searchTxt !== null)
+            url_ += "SearchTxt=" + encodeURIComponent("" + searchTxt) + "&";
+        if (itemIds !== undefined && itemIds !== null)
+            itemIds && itemIds.forEach(item => { url_ += "ItemIds=" + encodeURIComponent("" + item) + "&"; });
         if (pageNumber === null)
             throw new Error("The parameter 'pageNumber' cannot be null.");
         else if (pageNumber !== undefined)
@@ -938,9 +940,10 @@ export interface IPaginatedListOfTodoItemBriefDto {
 
 export class TodoItemBriefDto implements ITodoItemBriefDto {
     id?: number;
-    listId?: number;
+    listId?: number | undefined;
     title?: string | undefined;
     itemColour?: string | undefined;
+    note?: string | undefined;
     done?: boolean;
 
     constructor(data?: ITodoItemBriefDto) {
@@ -958,6 +961,7 @@ export class TodoItemBriefDto implements ITodoItemBriefDto {
             this.listId = _data["listId"];
             this.title = _data["title"];
             this.itemColour = _data["itemColour"];
+            this.note = _data["note"];
             this.done = _data["done"];
         }
     }
@@ -975,6 +979,7 @@ export class TodoItemBriefDto implements ITodoItemBriefDto {
         data["listId"] = this.listId;
         data["title"] = this.title;
         data["itemColour"] = this.itemColour;
+        data["note"] = this.note;
         data["done"] = this.done;
         return data;
     }
@@ -982,9 +987,10 @@ export class TodoItemBriefDto implements ITodoItemBriefDto {
 
 export interface ITodoItemBriefDto {
     id?: number;
-    listId?: number;
+    listId?: number | undefined;
     title?: string | undefined;
     itemColour?: string | undefined;
+    note?: string | undefined;
     done?: boolean;
 }
 

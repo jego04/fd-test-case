@@ -1,15 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Resolve, ActivatedRouteSnapshot } from '@angular/router';
-import { Observable, catchError, of, tap } from 'rxjs';
+import { Observable, catchError, forkJoin, of, tap } from 'rxjs';
 import { TodoItemDto, TodosVm } from '../web-api-client';
 import { Pagination, TodoListService } from './todolist.service';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
-export class ToDoListResolver implements Resolve<TodosVm> {
+export class ToDoListResolver implements Resolve<any> {
   constructor(private listService: TodoListService) {}
-  resolve(route: ActivatedRouteSnapshot): Observable<TodosVm> {
-    return this.listService.getToDoList();
+  resolve(route: ActivatedRouteSnapshot): Observable<any> {
+    const list = this.listService.getToDoList();
+    const items = this.listService.getPaginatedItems();
+
+    return forkJoin([list, items]);
   }
 }
 

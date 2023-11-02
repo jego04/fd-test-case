@@ -6,8 +6,9 @@ public class GetTodoItemsWithPaginationQueryValidator : AbstractValidator<GetTod
 {
     public GetTodoItemsWithPaginationQueryValidator()
     {
-        RuleFor(x => x.ListId)
-            .NotEmpty().WithMessage("ListId is required.");
+        //RuleFor(x => x.ListId)
+        //    .NotEmpty().WithMessage("ListId is required.")
+        //    .When(x => string.IsNullOrEmpty(x.SearchTxt));
 
         RuleFor(x => x.PageNumber)
             .GreaterThanOrEqualTo(1).WithMessage("PageNumber at least greater than or equal to 1.");

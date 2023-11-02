@@ -20,6 +20,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TodoItemsComponent } from './todo/todo-items/todo-items.component';
 import { TodoListNavComponent } from './todo/todo-list-nav/todo-list-nav.component';
 import { TodoListTitleComponent } from './todo/todo-list-title/todo-list.title.component';
+import { TodoSearchBarComponent } from './todo/todo-search-bar/todo-search-bar.component';
+import { TodoTagsComponent } from './todo/todo-tags/todo-tags.component';
+import { TodoPaginationComponent } from './todo/todo-pagination/todo-pagination.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +35,10 @@ import { TodoListTitleComponent } from './todo/todo-list-title/todo-list.title.c
     TodoHomeComponent,
     TodoListNavComponent,
     TodoListTitleComponent,
+    TodoSearchBarComponent,
+    TodoTagsComponent,
     TokenComponent,
+    TodoPaginationComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

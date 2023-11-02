@@ -19,15 +19,16 @@ export const routes: Routes = [
   { path: 'fetch-data', component: FetchDataComponent },
   {
     path: 'todo',
-    resolve: { resolvedList: ToDoListResolver },
+    resolve: {
+      resolvedList: ToDoListResolver,
+      itemTags: ToDoItemTagResolver,
+    },
     component: TodoHomeComponent,
     children: [
       {
         path: ':listId',
         resolve: {
           paginatedItems: ToDoListItemResolver,
-          itemTags: ToDoItemTagResolver,
-          resolvedList: ToDoListResolver,
         },
         component: TodoItemsComponent,
       },
