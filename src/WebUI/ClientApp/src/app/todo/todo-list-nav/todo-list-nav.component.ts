@@ -60,6 +60,6 @@ export class TodoListNavComponent implements OnInit {
   }
 
   remainingItems(list: TodoListDto): number {
-    return list.items.filter((t) => !t.done).length;
+    return list.items.filter((t) => !t.done && t.isDeleted == false).length;
   }
 }

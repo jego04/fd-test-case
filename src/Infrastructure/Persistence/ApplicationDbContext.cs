@@ -33,6 +33,8 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
 
     public DbSet<TodoItemTag> TodoItemTags => Set<TodoItemTag>();
 
+    public DbSet<T> Set<T>() where T : class => base.Set<T>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

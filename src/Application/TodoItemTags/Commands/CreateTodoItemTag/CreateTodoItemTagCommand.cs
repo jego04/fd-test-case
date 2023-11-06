@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 using MediatR;
+using Todo_App.Application.Common.Exceptions;
 using Todo_App.Application.Common.Interfaces;
 using Todo_App.Domain.Entities;
-using Todo_App.Domain.Events;
 
 namespace Todo_App.Application.TodoItemTags.Commands.CreateTodoItemTag;
 public record CreateTodoItemTagCommand : IRequest<int>
@@ -27,10 +23,18 @@ public class CreateTodoItemTagCommandHandler : IRequestHandler<CreateTodoItemTag
 
     public async Task<int> Handle(CreateTodoItemTagCommand request, CancellationToken cancellationToken)
     {
+
+        var itemData = await _context.TodoItems.FindAsync(new object[] { request.ItemId }, cancellationToken);
+
+        if (itemData == null)
+        {
+            throw new NotFoundException(nameof(TodoItemTag), request.ItemId);
+        }
+
         var entity = new TodoItemTag
         {
             TodoItemId= request.ItemId,
-            Name= request.Name,
+            Name= request.Name
         };
 
         _context.TodoItemTags.Add(entity);

@@ -32,4 +32,21 @@ public class DeleteTodoListTests : BaseTestFixture
 
         list.Should().BeNull();
     }
+
+
+    [Test]
+    public async Task ShouldSoftDeleteTodoList()
+    {
+        var listId = await SendAsync(new CreateTodoListCommand
+        {
+            Title = "New List 8"
+        });
+
+        await SendAsync(new SoftDeleteTodoListCommand(listId));
+
+        var list = await FindAsync<TodoList>(listId);
+
+        list?.isDeleted.Should().BeTrue();
+
+    }
 }

@@ -11,4 +11,6 @@ public interface IApplicationDbContext
     DbSet<TodoItemTag> TodoItemTags { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+
+    DbSet<T> Set<T>() where T : class;
 }

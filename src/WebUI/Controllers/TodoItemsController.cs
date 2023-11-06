@@ -98,4 +98,20 @@ public class TodoItemsController : ApiControllerBase
 
         return NoContent();
     }
+
+    [HttpDelete("Tag/Soft/{id}")]
+    public async Task<ActionResult> SoftDeleteTag(int id)
+    {
+        await Mediator.Send(new SoftDeleteTodoItemTagCommand(id));
+
+        return NoContent();
+    }
+
+    [HttpDelete("Soft/{id}")]
+    public async Task<ActionResult> SoftDelete(int id)
+    {
+        await Mediator.Send(new SoftDeleteTodoItemCommand(id));
+
+        return NoContent();
+    }
 }

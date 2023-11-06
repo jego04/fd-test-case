@@ -31,6 +31,7 @@ public class GetTodoItemsWithPaginationQueryHandler : IRequestHandler<GetTodoIte
     {
         var query = _context.TodoItems
             .OrderBy(x => x.Title)
+            .Where(x => x.isDeleted.Equals(false))
             .ProjectTo<TodoItemBriefDto>(_mapper.ConfigurationProvider);
         
         if (request.ListId.HasValue)

@@ -23,6 +23,8 @@ import { TodoListTitleComponent } from './todo/todo-list-title/todo-list.title.c
 import { TodoSearchBarComponent } from './todo/todo-search-bar/todo-search-bar.component';
 import { TodoTagsComponent } from './todo/todo-tags/todo-tags.component';
 import { TodoPaginationComponent } from './todo/todo-pagination/todo-pagination.component';
+import { CalendarModule } from 'primeng/calendar';
+import { TodoCalendarComponent } from './todo/todo-calendar/todo-calendar.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +41,7 @@ import { TodoPaginationComponent } from './todo/todo-pagination/todo-pagination.
     TodoTagsComponent,
     TokenComponent,
     TodoPaginationComponent,
+    TodoCalendarComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -48,6 +51,7 @@ import { TodoPaginationComponent } from './todo/todo-pagination/todo-pagination.
     ApiAuthorizationModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    CalendarModule,
     ModalModule.forRoot(),
   ],
   providers: [

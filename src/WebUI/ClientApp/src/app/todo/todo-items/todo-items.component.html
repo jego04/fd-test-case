@@ -125,7 +125,7 @@
           <div class="box tag">
             <div
               class="box-item tag"
-              *ngFor="let tag of filteredTags$ | async; index as i"
+              *ngFor="let tag of filteredTags; index as i"
             >
               <span class="box-value tag">{{ tag.name }}</span>
               <button

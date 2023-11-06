@@ -48,7 +48,7 @@ export class TodoItemsComponent implements OnInit {
   items$: Observable<TodoItemDto[]>;
   listData$: Observable<TodosVm>;
   listId: number;
-  filteredTags$: Observable<TodoItemsTagDto[]>;
+  filteredTags: TodoItemsTagDto[];
   tagInput: string;
 
   itemDetailsFormGroup = this.fb.group({
@@ -70,7 +70,9 @@ export class TodoItemsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.filteredTags$ = this.itemService.filteredTags$;
+    this.itemService.filteredTags$.pipe(take(1)).subscribe((res) => {
+      this.filteredTags = res;
+    });
     this.items$ = this.listService.items$;
     this.listData$ = this.listService.lists$;
 
@@ -118,7 +120,13 @@ export class TodoItemsComponent implements OnInit {
       this.itemDetailsFormGroup.patchValue(value);
     });
 
-    this.filteredTags$ = this.itemService.getTagsByItemId(item.id);
+    this.itemService
+      .getTagsByItemId(item.id)
+      .pipe(take(1))
+      .subscribe((res) => {
+        this.filteredTags = res;
+      });
+
     this.itemDetailsModalRef = this.modalService.show(template);
     this.itemDetailsModalRef.onHidden.subscribe(() => {
       this.stopDeleteCountDown();
@@ -204,7 +212,12 @@ export class TodoItemsComponent implements OnInit {
     this.listService
       .deleteItemInList(this.listId, item.id)
       .pipe(take(1))
-      .subscribe();
+      .subscribe(() => {
+        if (this.filteredTags.length > 0)
+          for (var i = 0; i < this.filteredTags.length; i++) {
+            this.removeTag(this.filteredTags[i].id);
+          }
+      });
   }
 
   addItem() {

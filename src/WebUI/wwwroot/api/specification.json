@@ -351,6 +351,72 @@
         }
       }
     },
+    "/api/TodoItems/Tag/Soft/{id}": {
+      "delete": {
+        "tags": [
+          "TodoItems"
+        ],
+        "operationId": "TodoItems_SoftDeleteTag",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/TodoItems/Soft/{id}": {
+      "delete": {
+        "tags": [
+          "TodoItems"
+        ],
+        "operationId": "TodoItems_SoftDelete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/TodoLists": {
       "get": {
         "tags": [
@@ -482,6 +548,39 @@
           "TodoLists"
         ],
         "operationId": "TodoLists_Delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/TodoLists/Soft/{id}": {
+      "delete": {
+        "tags": [
+          "TodoLists"
+        ],
+        "operationId": "TodoLists_SoftDelete",
         "parameters": [
           {
             "name": "id",
@@ -809,6 +908,9 @@
           "note": {
             "type": "string",
             "nullable": true
+          },
+          "isDeleted": {
+            "type": "boolean"
           }
         }
       },

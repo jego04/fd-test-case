@@ -58,6 +58,7 @@ export class TodoItemService {
   getTagsWithCount() {
     return this.tags$.pipe(
       take(1),
+      tap((r) => console.log(r)),
       map((tags) => {
         const result = this.CountNumberOfTags(tags);
         this._tagsWithCount.next(result);
@@ -68,6 +69,11 @@ export class TodoItemService {
 
   CountNumberOfTags(tags: TodoItemsTagDto[]) {
     const result = [];
+
+    if (tags == null || tags.length == 0) {
+      return result;
+    }
+
     for (let tag of tags) {
       let group = result.find((g) => g.name == tag.name);
       if (!group) {
@@ -100,7 +106,7 @@ export class TodoItemService {
     return this.filteredTags$.pipe(
       take(1),
       switchMap((tags) =>
-        this.itemsClient.deleteTag(id).pipe(
+        this.itemsClient.softDeleteTag(id).pipe(
           map((res) => {
             const idx = tags.findIndex((f) => f.id == id);
             const removedTagName = tags[idx].name;
@@ -108,7 +114,6 @@ export class TodoItemService {
             this._filteredTags.next(tags);
             return {
               response: res,
-              removedTagName: removedTagName,
               removedIndex: idx,
             };
           }),
@@ -132,6 +137,20 @@ export class TodoItemService {
     );
   }
 
+  removeTagWhenItemIsRemoved(itemId: number) {
+    return this.tags$.pipe(
+      take(1),
+      map((tags) => {
+        const idx = tags.findIndex((f) => f.id == itemId);
+        tags.splice(idx, 1);
+        const result = this.CountNumberOfTags(tags);
+        this._tagsWithCount.next(result);
+        this._tags.next(tags);
+        return tags;
+      })
+    );
+  }
+
   createTag(tag: CreateTodoItemTagCommand): Observable<TodoItemsTagDto[]> {
     return this.filteredTags$.pipe(
       take(1),
@@ -147,6 +166,7 @@ export class TodoItemService {
             this.tags$.pipe(
               take(1),
               map((tags) => {
+                tags === null ? (tags = []) : tags;
                 tag = { ...tag, todoItemId: tag.itemId } as TodoItemsTagDto;
                 tags.push(tag);
                 this._tags.next(tags);

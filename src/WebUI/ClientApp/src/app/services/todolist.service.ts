@@ -23,6 +23,7 @@ import {
 import { HttpErrorResponse } from '@angular/common/http';
 import { ParamsBuilderService } from './params-builder.service';
 import { environment } from 'src/environments/environment';
+import { TodoItemService } from './todoitem.service';
 
 export interface Pagination {
   pageNumber?: number;
@@ -71,6 +72,7 @@ export class TodoListService {
   constructor(
     private listClient: TodoListsClient,
     private itemsClient: TodoItemsClient,
+    private itemService: TodoItemService,
     private paramsBuilder: ParamsBuilderService
   ) {}
 
@@ -140,7 +142,7 @@ export class TodoListService {
     return this.lists$.pipe(
       take(1),
       switchMap((lists) =>
-        this.listClient.delete(id).pipe(
+        this.listClient.softDelete(id).pipe(
           map((res) => {
             const idx = lists.lists.findIndex((f) => f.id == id);
             lists.lists.splice(idx, 1);
@@ -156,7 +158,7 @@ export class TodoListService {
     return this.items$.pipe(
       take(1),
       switchMap((itemList) =>
-        this.itemsClient.delete(itemId).pipe(
+        this.itemsClient.softDelete(itemId).pipe(
           take(1),
           map((r) => {
             const idx = itemList.findIndex((f) => f.id == itemId);

@@ -27,6 +27,6 @@ public class GetTagByItemIdQueryHandler : IRequestHandler<GetTagByItemIdQuery, I
     }
     public async Task<IList<TodoItemsTagDto>> Handle(GetTagByItemIdQuery request, CancellationToken cancellationToken)
     {
-        return await _context.TodoItemTags.Where(t => t.TodoItemId == request.ItemId).ProjectTo<TodoItemsTagDto>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken);
+        return await _context.TodoItemTags.Where(t => t.TodoItemId == request.ItemId && t.isDeleted.Equals(false)).ProjectTo<TodoItemsTagDto>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken);
     }
 }
