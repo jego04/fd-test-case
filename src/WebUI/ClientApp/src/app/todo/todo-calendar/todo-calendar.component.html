@@ -1,1 +1,9 @@
-<p-calendar [(ngModel)]="daysWithItems" [inline]="true"></p-calendar>
+<p-calendar
+  (ngModelChange)="onModelChange($event, calendar)"
+  (onMonthChange)="onMonthChanged($event)"
+  selectionMode="multiple"
+  [ngModel]="daysWithEvents"
+  [inline]="true"
+  [readonlyInput]="true"
+  #calendar
+></p-calendar>

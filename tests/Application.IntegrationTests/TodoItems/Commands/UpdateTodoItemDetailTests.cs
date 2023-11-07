@@ -43,6 +43,7 @@ public class UpdateTodoItemDetailTests : BaseTestFixture
             ListId = listId,
             Note = "A1",
             ItemColour = "#FFFFFF",
+            Reminder = new DateTime(2023, 1, 15, 12, 0, 0),
             Priority = PriorityLevel.High
         };
 
@@ -55,6 +56,7 @@ public class UpdateTodoItemDetailTests : BaseTestFixture
         item.Note.Should().Be(command.Note);
         item.ItemColour.Should().Be(command.ItemColour);
         item.Priority.Should().Be(command.Priority);
+        item.Reminder.Should().Be(command.Reminder);
         item.LastModifiedBy.Should().NotBeNull();
         item.LastModifiedBy.Should().Be(userId);
         item.LastModified.Should().NotBeNull();

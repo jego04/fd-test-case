@@ -685,6 +685,10 @@
             "type": "string",
             "nullable": true
           },
+          "reminder": {
+            "type": "string",
+            "format": "date-time"
+          },
           "note": {
             "type": "string",
             "nullable": true
@@ -738,6 +742,10 @@
             "type": "string",
             "nullable": true
           },
+          "reminder": {
+            "type": "string",
+            "format": "date-time"
+          },
           "itemColour": {
             "type": "string",
             "nullable": true
@@ -783,6 +791,10 @@
           "itemColour": {
             "type": "string",
             "nullable": true
+          },
+          "reminder": {
+            "type": "string",
+            "format": "date-time"
           },
           "note": {
             "type": "string",
@@ -908,6 +920,10 @@
           "note": {
             "type": "string",
             "nullable": true
+          },
+          "reminder": {
+            "type": "string",
+            "format": "date-time"
           },
           "isDeleted": {
             "type": "boolean"

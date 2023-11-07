@@ -13,6 +13,8 @@ public class TodoItemBriefDto : IMapFrom<TodoItem>
 
     public string? ItemColour { get; set; }
 
+    public DateTime Reminder { get; set; }  
+
     public string? Note { get; set; }  
 
     public bool Done { get; set; }

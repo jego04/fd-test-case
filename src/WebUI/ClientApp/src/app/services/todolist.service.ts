@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
+  CreateTodoItemCommand,
   CreateTodoListCommand,
   PaginatedListOfTodoItemBriefDto,
   TodoItemDto,
@@ -267,6 +268,27 @@ export class TodoListService {
             lists.lists.push(newList);
             this._lists.next(lists);
             return res;
+          })
+        )
+      )
+    );
+  }
+
+  createItem(item: CreateTodoItemCommand) {
+    return this.lists$.pipe(
+      take(1),
+      switchMap((lists) =>
+        this.itemsClient.create(item).pipe(
+          map((response) => {
+            const idx = lists.lists.findIndex((f) => f.id == item.listId);
+            const newItemInList = {
+              ...item,
+              id: response,
+              reminder: new Date(),
+            } as TodoItemDto;
+            lists.lists[idx].items.push(newItemInList);
+            this._lists.next(lists);
+            return response;
           })
         )
       )

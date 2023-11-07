@@ -9,10 +9,21 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class ToDoListResolver implements Resolve<any> {
   constructor(private listService: TodoListService) {}
   resolve(route: ActivatedRouteSnapshot): Observable<any> {
-    const list = this.listService.getToDoList();
-    const items = this.listService.getPaginatedItems();
+    return this.listService.getToDoList();
+  }
+}
 
-    return forkJoin([list, items]);
+@Injectable({ providedIn: 'root' })
+export class ToDoPaginatedItemsResolver implements Resolve<any> {
+  constructor(private listService: TodoListService) {}
+  resolve(route: ActivatedRouteSnapshot): Observable<any> {
+    return this.listService.getPaginatedItems(
+      undefined,
+      undefined,
+      undefined,
+      1,
+      5
+    );
   }
 }
 

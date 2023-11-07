@@ -12,16 +12,20 @@ public record CreateTodoItemCommand : IRequest<int>
 
     public string? Title { get; init; }
 
+    public DateTime Reminder { get; set; }
+
     public string? ItemColour { get; init; } 
 }
 
 public class CreateTodoItemCommandHandler : IRequestHandler<CreateTodoItemCommand, int>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IDateTime _dateTime;
 
-    public CreateTodoItemCommandHandler(IApplicationDbContext context)
+    public CreateTodoItemCommandHandler(IApplicationDbContext context, IDateTime dateTime)
     {
         _context = context;
+        _dateTime = dateTime;
     }
 
     public async Task<int> Handle(CreateTodoItemCommand request, CancellationToken cancellationToken)
@@ -31,6 +35,7 @@ public class CreateTodoItemCommandHandler : IRequestHandler<CreateTodoItemComman
             ListId = request.ListId,
             Title = request.Title,
             ItemColour = request.ItemColour,
+            Reminder= _dateTime.Now,
             Done = false
         };
 

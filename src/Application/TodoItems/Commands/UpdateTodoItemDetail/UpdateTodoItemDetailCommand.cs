@@ -16,6 +16,8 @@ public record UpdateTodoItemDetailCommand : IRequest
 
     public string? ItemColour { get; init; }
 
+    public DateTime Reminder { get; set; }
+
     public string? Note { get; init; }
 }
 
@@ -41,6 +43,7 @@ public class UpdateTodoItemDetailCommandHandler : IRequestHandler<UpdateTodoItem
         entity.ListId = request.ListId;
         entity.Priority = request.Priority;
         entity.Note = request.Note;
+        entity.Reminder = request.Reminder;
         entity.ItemColour= request.ItemColour;
 
 

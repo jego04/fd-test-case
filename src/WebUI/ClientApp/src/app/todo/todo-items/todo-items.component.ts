@@ -56,6 +56,7 @@ export class TodoItemsComponent implements OnInit {
     listId: [null],
     priority: [''],
     itemColour: [''],
+    reminder: [''],
     note: [''],
   });
 
@@ -113,8 +114,9 @@ export class TodoItemsComponent implements OnInit {
   // Items
   showItemDetailsModal(template: TemplateRef<any>, item: TodoItemDto): void {
     this.selectedItem = item;
-    console.log(this.selectedItem);
+
     this.listData$.pipe(take(1)).subscribe((res) => {
+      console.log(res);
       const idx = res.lists.findIndex((f) => f.id == item.listId);
       const value = res.lists[idx].items.find((f) => f.id == item.id);
       this.itemDetailsFormGroup.patchValue(value);
@@ -137,6 +139,7 @@ export class TodoItemsComponent implements OnInit {
     const item = new UpdateTodoItemDetailCommand(
       this.itemDetailsFormGroup.value
     );
+
     this.listService
       .updateItemDetails(this.selectedItem.id, item, listId)
       .pipe(take(1))
@@ -163,17 +166,15 @@ export class TodoItemsComponent implements OnInit {
     }
 
     if (isEmpty.length > 1 && item.id == 0) {
-      this.itemsClient
-        .create({
+      this.listService
+        .createItem({
           ...item,
           listId: this.listId,
         } as CreateTodoItemCommand)
-        .subscribe(
-          (result) => {
-            item.id = result;
-          },
-          (error) => console.error(error)
-        );
+        .pipe(take(1))
+        .subscribe((res) => {
+          item.id = res;
+        });
     }
 
     if (item.id != 0)

@@ -1,0 +1,55 @@
+::ng-deep .p-calendar {
+ .p-datepicker {
+    border: 0;
+ }
+
+ .p-calendar {
+    width: auto !important;
+ }
+
+ .p-datepicker-header {
+    border-bottom: none !important;
+    padding: 0;
+ }
+ table {
+    td {
+        &.p-selected-date span {
+            background-color: green;
+            color: white;
+            &.p-highlight {
+                color: white;
+                background-color: green;
+                &::before {
+                    background-color: white;
+                }
+            }
+        }
+
+        span.p-highlight {
+            background-color: white;
+            color: #495057;
+
+            &::before {
+                transform: translateX(-50%);
+                border-radius: 100%;
+                position: absolute;
+                top: 1.8em;
+                background: green;
+                bottom: 10px;
+                height: 8px;
+                content: '';
+                width: 8px;
+                left: 50%;
+            }
+        }
+
+        span.p-disabled {
+            opacity: 1;
+        }
+
+        &.p-datepicker-other-month {
+            opacity: 0.5;
+        }
+    }
+ }
+}

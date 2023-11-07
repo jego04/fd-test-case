@@ -1093,6 +1093,7 @@ export class TodoItemBriefDto implements ITodoItemBriefDto {
     listId?: number | undefined;
     title?: string | undefined;
     itemColour?: string | undefined;
+    reminder?: Date;
     note?: string | undefined;
     done?: boolean;
 
@@ -1111,6 +1112,7 @@ export class TodoItemBriefDto implements ITodoItemBriefDto {
             this.listId = _data["listId"];
             this.title = _data["title"];
             this.itemColour = _data["itemColour"];
+            this.reminder = _data["reminder"] ? new Date(_data["reminder"].toString()) : <any>undefined;
             this.note = _data["note"];
             this.done = _data["done"];
         }
@@ -1129,6 +1131,7 @@ export class TodoItemBriefDto implements ITodoItemBriefDto {
         data["listId"] = this.listId;
         data["title"] = this.title;
         data["itemColour"] = this.itemColour;
+        data["reminder"] = this.reminder ? this.reminder.toISOString() : <any>undefined;
         data["note"] = this.note;
         data["done"] = this.done;
         return data;
@@ -1140,6 +1143,7 @@ export interface ITodoItemBriefDto {
     listId?: number | undefined;
     title?: string | undefined;
     itemColour?: string | undefined;
+    reminder?: Date;
     note?: string | undefined;
     done?: boolean;
 }
@@ -1231,6 +1235,7 @@ export interface ICreateTodoItemTagCommand {
 export class CreateTodoItemCommand implements ICreateTodoItemCommand {
     listId?: number;
     title?: string | undefined;
+    reminder?: Date;
     itemColour?: string | undefined;
 
     constructor(data?: ICreateTodoItemCommand) {
@@ -1246,6 +1251,7 @@ export class CreateTodoItemCommand implements ICreateTodoItemCommand {
         if (_data) {
             this.listId = _data["listId"];
             this.title = _data["title"];
+            this.reminder = _data["reminder"] ? new Date(_data["reminder"].toString()) : <any>undefined;
             this.itemColour = _data["itemColour"];
         }
     }
@@ -1261,6 +1267,7 @@ export class CreateTodoItemCommand implements ICreateTodoItemCommand {
         data = typeof data === 'object' ? data : {};
         data["listId"] = this.listId;
         data["title"] = this.title;
+        data["reminder"] = this.reminder ? this.reminder.toISOString() : <any>undefined;
         data["itemColour"] = this.itemColour;
         return data;
     }
@@ -1269,6 +1276,7 @@ export class CreateTodoItemCommand implements ICreateTodoItemCommand {
 export interface ICreateTodoItemCommand {
     listId?: number;
     title?: string | undefined;
+    reminder?: Date;
     itemColour?: string | undefined;
 }
 
@@ -1325,6 +1333,7 @@ export class UpdateTodoItemDetailCommand implements IUpdateTodoItemDetailCommand
     listId?: number;
     priority?: PriorityLevel;
     itemColour?: string | undefined;
+    reminder?: Date;
     note?: string | undefined;
 
     constructor(data?: IUpdateTodoItemDetailCommand) {
@@ -1342,6 +1351,7 @@ export class UpdateTodoItemDetailCommand implements IUpdateTodoItemDetailCommand
             this.listId = _data["listId"];
             this.priority = _data["priority"];
             this.itemColour = _data["itemColour"];
+            this.reminder = _data["reminder"] ? new Date(_data["reminder"].toString()) : <any>undefined;
             this.note = _data["note"];
         }
     }
@@ -1359,6 +1369,7 @@ export class UpdateTodoItemDetailCommand implements IUpdateTodoItemDetailCommand
         data["listId"] = this.listId;
         data["priority"] = this.priority;
         data["itemColour"] = this.itemColour;
+        data["reminder"] = this.reminder ? this.reminder.toISOString() : <any>undefined;
         data["note"] = this.note;
         return data;
     }
@@ -1369,6 +1380,7 @@ export interface IUpdateTodoItemDetailCommand {
     listId?: number;
     priority?: PriorityLevel;
     itemColour?: string | undefined;
+    reminder?: Date;
     note?: string | undefined;
 }
 
@@ -1587,6 +1599,7 @@ export class TodoItemDto implements ITodoItemDto {
     done?: boolean;
     priority?: number;
     note?: string | undefined;
+    reminder?: Date;
     isDeleted?: boolean;
 
     constructor(data?: ITodoItemDto) {
@@ -1607,6 +1620,7 @@ export class TodoItemDto implements ITodoItemDto {
             this.done = _data["done"];
             this.priority = _data["priority"];
             this.note = _data["note"];
+            this.reminder = _data["reminder"] ? new Date(_data["reminder"].toString()) : <any>undefined;
             this.isDeleted = _data["isDeleted"];
         }
     }
@@ -1627,6 +1641,7 @@ export class TodoItemDto implements ITodoItemDto {
         data["done"] = this.done;
         data["priority"] = this.priority;
         data["note"] = this.note;
+        data["reminder"] = this.reminder ? this.reminder.toISOString() : <any>undefined;
         data["isDeleted"] = this.isDeleted;
         return data;
     }
@@ -1640,6 +1655,7 @@ export interface ITodoItemDto {
     done?: boolean;
     priority?: number;
     note?: string | undefined;
+    reminder?: Date;
     isDeleted?: boolean;
 }
 

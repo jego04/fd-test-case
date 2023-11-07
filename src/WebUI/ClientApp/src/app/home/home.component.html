@@ -1,8 +1,21 @@
-<div class="row">
-  <div class="col-sm-4">
-    <app-todo-calendar-component></app-todo-calendar-component>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-4">
+      <app-todo-calendar-component
+        [daysWithItems]="daysWithItems | async"
+        (selectedDateChange)="updateItemsList($event)"
+      ></app-todo-calendar-component>
+    </div>
+    <div class="col-sm-8">
+      <h4>
+        {{ selectedDate | date : "dd MMM yyyy" | uppercase }}
+      </h4>
+      <app-item-card
+        *ngFor="let item of selectedDateItems | async"
+        [item]="item"
+      ></app-item-card>
+    </div>
   </div>
-  <div class="col-sm-8"></div>
 </div>
 <!-- <h1>FD Test case project!</h1>
 <p>Welcome to your test task.</p>

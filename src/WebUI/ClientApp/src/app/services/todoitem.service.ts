@@ -58,7 +58,6 @@ export class TodoItemService {
   getTagsWithCount() {
     return this.tags$.pipe(
       take(1),
-      tap((r) => console.log(r)),
       map((tags) => {
         const result = this.CountNumberOfTags(tags);
         this._tagsWithCount.next(result);

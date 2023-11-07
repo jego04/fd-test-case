@@ -8,19 +8,26 @@ import { TokenComponent } from './token/token.component';
 import {
   ToDoListItemResolver,
   ToDoListResolver,
+  ToDoPaginatedItemsResolver,
 } from './services/todolist.resolver';
 import { ToDoItemTagResolver } from './services/todoitem-tag.resolver';
 import { TodoHomeComponent } from './todo/todo-home.component';
 import { TodoItemsComponent } from './todo/todo-items/todo-items.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent, pathMatch: 'full' },
+  {
+    path: '',
+    component: HomeComponent,
+    resolve: { paginatedItems: ToDoPaginatedItemsResolver },
+    pathMatch: 'full',
+  },
   { path: 'counter', component: CounterComponent },
   { path: 'fetch-data', component: FetchDataComponent },
   {
     path: 'todo',
     resolve: {
       resolvedList: ToDoListResolver,
+      paginatedItems: ToDoPaginatedItemsResolver,
       itemTags: ToDoItemTagResolver,
     },
     component: TodoHomeComponent,
@@ -28,7 +35,9 @@ export const routes: Routes = [
       {
         path: ':listId',
         resolve: {
-          paginatedItems: ToDoListItemResolver,
+          itemsByListId: ToDoListItemResolver,
+          list: ToDoListResolver,
+          items: ToDoPaginatedItemsResolver,
         },
         component: TodoItemsComponent,
       },

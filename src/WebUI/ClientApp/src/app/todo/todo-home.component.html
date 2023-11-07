@@ -22,6 +22,7 @@
             <div class="flex-fill">
               <div
                 class="form-control item-input-control mb-2"
+                [style.background-color]="item.itemColour"
                 [routerLink]="[item.listId]"
               >
                 {{ item.title }}

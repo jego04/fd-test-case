@@ -4,6 +4,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { CalendarModule } from 'primeng/calendar';
+import { PanelModule } from 'primeng/panel';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -23,8 +25,8 @@ import { TodoListTitleComponent } from './todo/todo-list-title/todo-list.title.c
 import { TodoSearchBarComponent } from './todo/todo-search-bar/todo-search-bar.component';
 import { TodoTagsComponent } from './todo/todo-tags/todo-tags.component';
 import { TodoPaginationComponent } from './todo/todo-pagination/todo-pagination.component';
-import { CalendarModule } from 'primeng/calendar';
 import { TodoCalendarComponent } from './todo/todo-calendar/todo-calendar.component';
+import { ItemCardComponent } from './home/item-card/item-card.component';
 
 @NgModule({
   declarations: [
@@ -42,6 +44,7 @@ import { TodoCalendarComponent } from './todo/todo-calendar/todo-calendar.compon
     TokenComponent,
     TodoPaginationComponent,
     TodoCalendarComponent,
+    ItemCardComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -52,6 +55,7 @@ import { TodoCalendarComponent } from './todo/todo-calendar/todo-calendar.compon
     AppRoutingModule,
     BrowserAnimationsModule,
     CalendarModule,
+    PanelModule,
     ModalModule.forRoot(),
   ],
   providers: [

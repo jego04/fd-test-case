@@ -76,6 +76,7 @@
           </option>
         </select>
       </div>
+
       <div class="form-group">
         <label for="priority">Priority</label>
         <select id="priority" class="form-control" formControlName="priority">
@@ -139,6 +140,18 @@
           </div>
         </div>
       </div>
+
+      <div class="form-group">
+        <label for="reminder">Reminder</label>
+        <p-calendar
+          id="reminder"
+          dateFormat="mm-dd-yy"
+          inputId="dateformat"
+          class="form-control"
+          formControlName="reminder"
+        ></p-calendar>
+      </div>
+
       <div class="form-group">
         <label for="note">Note</label>
         <textarea
@@ -149,6 +162,7 @@
         ></textarea>
       </div>
     </form>
+    {{ itemDetailsFormGroup.value | json }}
     <div *ngIf="debug">
       <pre>{{ itemDetailsFormGroup.value | json }}</pre>
     </div>
