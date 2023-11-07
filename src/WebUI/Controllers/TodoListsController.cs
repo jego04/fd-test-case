@@ -49,4 +49,12 @@ public class TodoListsController : ApiControllerBase
 
         return NoContent();
     }
+
+    [HttpDelete("Soft/{id}")]
+    public async Task<ActionResult> SoftDelete(int id)
+    {
+        await Mediator.Send(new SoftDeleteTodoListCommand(id));
+
+        return NoContent();
+    }
 }

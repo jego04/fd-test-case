@@ -5,6 +5,9 @@ using Todo_App.Application.TodoItems.Commands.DeleteTodoItem;
 using Todo_App.Application.TodoItems.Commands.UpdateTodoItem;
 using Todo_App.Application.TodoItems.Commands.UpdateTodoItemDetail;
 using Todo_App.Application.TodoItems.Queries.GetTodoItemsWithPagination;
+using Todo_App.Application.TodoItemTags.Commands.CreateTodoItemTag;
+using Todo_App.Application.TodoItemTags.Commands.DeleteTodoItemTag;
+using Todo_App.Application.TodoItemTags.Queries;
 
 namespace Todo_App.WebUI.Controllers;
 
@@ -14,6 +17,38 @@ public class TodoItemsController : ApiControllerBase
     public async Task<ActionResult<PaginatedList<TodoItemBriefDto>>> GetTodoItemsWithPagination([FromQuery] GetTodoItemsWithPaginationQuery query)
     {
         return await Mediator.Send(query);
+    }
+
+    [HttpGet("Tag")]
+    public async Task<ActionResult<IList<TodoItemsTagDto>>> GetTags()
+    {
+        var data = await Mediator.Send(new GetTodoItemsTagQuery());
+
+        if(data.Count == 0)
+        {
+            return NoContent();
+        }
+
+        return Ok(data);
+    }
+
+    [HttpGet("Tag/{id}")]
+    public async Task<ActionResult<IList<TodoItemsTagDto>>> GetTagsByItemId(int id)
+    {
+        var data = await Mediator.Send(new GetTagByItemIdQuery {  ItemId = id } );
+
+        if (data.Count == 0)
+        {
+            return Ok(new List<TodoItemsTagDto>());
+        }
+
+        return Ok(data);
+    }
+
+    [HttpPost("Tag")]
+    public async Task<ActionResult<int>> Create(CreateTodoItemTagCommand command)
+    {
+        return await Mediator.Send(command);
     }
 
     [HttpPost]
@@ -48,10 +83,34 @@ public class TodoItemsController : ApiControllerBase
         return NoContent();
     }
 
+    [HttpDelete("Tag/{id}")]
+    public async Task<ActionResult> DeleteTag(int id)
+    {
+        await Mediator.Send(new DeleteTodoItemTagCommand(id));
+
+        return NoContent();
+    }
+
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(int id)
     {
         await Mediator.Send(new DeleteTodoItemCommand(id));
+
+        return NoContent();
+    }
+
+    [HttpDelete("Tag/Soft/{id}")]
+    public async Task<ActionResult> SoftDeleteTag(int id)
+    {
+        await Mediator.Send(new SoftDeleteTodoItemTagCommand(id));
+
+        return NoContent();
+    }
+
+    [HttpDelete("Soft/{id}")]
+    public async Task<ActionResult> SoftDelete(int id)
+    {
+        await Mediator.Send(new SoftDeleteTodoItemCommand(id));
 
         return NoContent();
     }

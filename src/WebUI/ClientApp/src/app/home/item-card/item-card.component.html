@@ -1,0 +1,6 @@
+<div class="card mb-2" [style.border-color]="item.itemColour">
+  <p-panel [header]="item.title">
+    <i class="pi pi-check" style="font-size: 1.2rem" *ngIf="item.done"></i>
+    <span style="margin-inline: 1em">{{ item.note }}</span>
+  </p-panel>
+</div>

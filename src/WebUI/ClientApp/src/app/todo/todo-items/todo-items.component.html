@@ -1,0 +1,193 @@
+<ng-container>
+  <app-todo-list-title-component></app-todo-list-title-component>
+  <ul id="todo-items" class="list-group mb-2">
+    <li
+      class="list-group-item"
+      *ngFor="let item of items$ | async; index as i"
+      [style.background-color]="item.itemColour"
+    >
+      <div class="d-flex">
+        <div class="todo-item-checkbox">
+          <input
+            type="checkbox"
+            [(ngModel)]="item.done"
+            (change)="updateItem(item)"
+          />
+        </div>
+        <div class="flex-fill">
+          <input
+            id="{{ 'itemTitle' + i }}"
+            *ngIf="item == selectedItem"
+            type="text"
+            class="form-control item-input-control"
+            [(ngModel)]="item.title"
+            (keyup.enter)="updateItem(item, true)"
+            (blur)="updateItem(item, false, i)"
+            autofocus="autofocus"
+          />
+          <div
+            class="todo-item-title"
+            *ngIf="item != selectedItem"
+            [ngClass]="{ 'done-todo': item.done }"
+            (click)="editItem(item, 'itemTitle' + i)"
+            class="form-control item-input-control"
+          >
+            <span>{{ item.title }}</span>
+          </div>
+        </div>
+        <div class="todo-item-commands">
+          <button
+            *ngIf="item.id != 0"
+            (click)="showItemDetailsModal(itemDetailsModalTemplate, item)"
+            class="btn btn-default btn-xs"
+            role="button"
+          >
+            <i class="bi bi-three-dots-vertical"></i>
+          </button>
+        </div>
+      </div>
+    </li>
+
+    <li class="list-group-item" (click)="addItem()">
+      <button class="btn btn-default">Add Item...</button>
+    </li>
+  </ul>
+</ng-container>
+
+<ng-template #itemDetailsModalTemplate>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Item Details</h4>
+    <button
+      type="button"
+      class="close btn-close pull-right"
+      aria-label="Close"
+      (click)="itemDetailsModalRef.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body" *ngIf="listData$ | async as data">
+    <form [formGroup]="itemDetailsFormGroup" class="form">
+      <div class="form-group">
+        <label for="list">List</label>
+        <select id="list" class="form-control" formControlName="listId">
+          <option [ngValue]="list.id" *ngFor="let list of data.lists">
+            {{ list.title }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="priority">Priority</label>
+        <select id="priority" class="form-control" formControlName="priority">
+          <option
+            [ngValue]="level.value"
+            *ngFor="let level of data.priorityLevels"
+          >
+            {{ level.name }}
+          </option>
+        </select>
+      </div>
+      <div class="form-group">
+        <div class="box">
+          <div
+            class="box-item colour"
+            *ngFor="let colour of data.colours; index as i"
+            (click)="setColorWhenClicked(colour.code)"
+          >
+            <span
+              [style.background-color]="colour.code"
+              class="box-value colour"
+              >&nbsp;</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Tag</label>
+        <button
+          type="button"
+          class="btn btn-primary btn-circle btn-xl"
+          (click)="toggleInputTag()"
+        >
+          +
+        </button>
+        <div *ngIf="inputTagVisible">
+          <input
+            [(ngModel)]="tagInput"
+            [ngModelOptions]="{ standalone: true }"
+            type="text"
+            class="form-control"
+            (blur)="addTag()"
+          />
+        </div>
+        <div class="form-group">
+          <div class="box tag">
+            <div
+              class="box-item tag"
+              *ngFor="let tag of filteredTags; index as i"
+            >
+              <span class="box-value tag">{{ tag.name }}</span>
+              <button
+                type="button"
+                (click)="removeTag(tag.id)"
+                class="btn btn-danger btn-circle btn-xl"
+              >
+                -
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="reminder">Reminder</label>
+        <p-calendar
+          id="reminder"
+          dateFormat="mm-dd-yy"
+          inputId="dateformat"
+          class="form-control"
+          formControlName="reminder"
+        ></p-calendar>
+      </div>
+
+      <div class="form-group">
+        <label for="note">Note</label>
+        <textarea
+          id="note"
+          class="form-control"
+          rows="3"
+          formControlName="note"
+        ></textarea>
+      </div>
+    </form>
+    {{ itemDetailsFormGroup.value | json }}
+    <div *ngIf="debug">
+      <pre>{{ itemDetailsFormGroup.value | json }}</pre>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="clearfix">
+      <div class="float-start">
+        <button
+          class="btn btn-default text-danger"
+          (click)="deleteItem(selectedItem, true)"
+        >
+          {{ deleting ? "Deleting " + deleteCountDown + " ..." : "Delete" }}
+        </button>
+      </div>
+      <div class="float-end">
+        <button class="btn btn-default" (click)="itemDetailsModalRef.hide()">
+          Cancel
+        </button>
+        <button
+          class="btn btn-primary"
+          (click)="updateItemDetails(selectedItem.listId)"
+        >
+          Update
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>

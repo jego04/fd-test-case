@@ -318,7 +318,6 @@ namespace Todo_App.Infrastructure.Persistence.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("ItemColour")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
@@ -346,11 +345,50 @@ namespace Todo_App.Infrastructure.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ListId");
 
                     b.ToTable("TodoItems");
+                });
+
+            modelBuilder.Entity("Todo_App.Domain.Entities.TodoItemTag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TodoItemId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TodoItemId");
+
+                    b.ToTable("TodoItemTags");
                 });
 
             modelBuilder.Entity("Todo_App.Domain.Entities.TodoList", b =>
@@ -377,6 +415,9 @@ namespace Todo_App.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -510,6 +551,15 @@ namespace Todo_App.Infrastructure.Persistence.Migrations
                     b.Navigation("List");
                 });
 
+            modelBuilder.Entity("Todo_App.Domain.Entities.TodoItemTag", b =>
+                {
+                    b.HasOne("Todo_App.Domain.Entities.TodoItem", null)
+                        .WithMany("Tags")
+                        .HasForeignKey("TodoItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Todo_App.Domain.Entities.TodoList", b =>
                 {
                     b.OwnsOne("Todo_App.Domain.ValueObjects.Colour", "Colour", b1 =>
@@ -531,6 +581,11 @@ namespace Todo_App.Infrastructure.Persistence.Migrations
 
                     b.Navigation("Colour")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Todo_App.Domain.Entities.TodoItem", b =>
+                {
+                    b.Navigation("Tags");
                 });
 
             modelBuilder.Entity("Todo_App.Domain.Entities.TodoList", b =>

@@ -11,7 +11,7 @@ public record UpdateTodoItemCommand : IRequest
 
     public string? Title { get; init; }
 
-    public string? ItemColour { get; init; } 
+    public string? ItemColour { get; init; }
 
     public bool Done { get; init; }
 }

@@ -41,4 +41,27 @@ public class DeleteTodoItemTests : BaseTestFixture
 
         item.Should().BeNull();
     }
+
+    [Test]
+    public async Task ShouldSoftDeleteTodoItem()
+    {
+        var listId = await SendAsync(new CreateTodoListCommand
+        {
+            Title = "New List 2"
+        });
+
+        var itemId = await SendAsync(new CreateTodoItemCommand
+        {
+            ListId = listId,
+            Title = "New Item 2"
+        });
+
+        await SendAsync(new SoftDeleteTodoItemCommand(itemId));
+
+        var item = await FindAsync<TodoItem>(itemId);
+
+        item.Should().NotBeNull();
+
+        item?.isDeleted.Should().BeTrue(); 
+    }
 }

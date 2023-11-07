@@ -23,3 +23,46 @@ code {
 
 /* Importing Bootstrap Icons SCSS file. */
 @import '../node_modules/bootstrap-icons/font/bootstrap-icons';
+@import "primeng/resources/themes/lara-light-blue/theme.css";
+@import "primeng/resources/primeng.css";
+
+.box {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px;
+
+ .box-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+    &.colour {
+      margin: 5px;
+      padding: 2px;
+      border: 1px solid #ccc;
+      &:hover {
+        background-color: black;
+      }
+    }
+
+    &.tag {
+      border: 1px solid #ccc;
+      border-radius: 60px;
+      padding: 0.5em;
+      margin-inline: 0.5em;
+    }
+ }
+
+ .box-value {
+  &.colour {
+    padding-inline: 2em;
+    }
+ }
+
+ .btn-circle.btn-xl {
+  border-radius: 60px;
+  font-size: 8px;
+  text-align: center;
+  margin-left: 0.8em;
+}
+}

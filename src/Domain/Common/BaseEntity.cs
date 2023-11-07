@@ -6,6 +6,8 @@ public abstract class BaseEntity
 {
     public int Id { get; set; }
 
+    public bool isDeleted { get; set; } = false;
+
     private readonly List<BaseEvent> _domainEvents = new();
 
     [NotMapped]
